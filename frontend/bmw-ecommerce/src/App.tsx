@@ -1,5 +1,9 @@
 import axios from "axios";
 import { useEffect } from "react";
+import { AuthProvider } from "./contexts/AuthContext";
+import Login from "./pages/Login";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Signup from "./pages/Signup";
 
 function App() {
   useEffect(() => {
@@ -10,9 +14,17 @@ function App() {
   }, []);
   return (
     <div className="text-center mt-100">
-      <h1 className="text-4xl font-bold text-red-500">
-        BMW Ecommerce Frontend is Working 🚀
-      </h1>
+      <AuthProvider>
+        <h1 className="text-4xl font-bold text-red-500">
+          BMW Ecommerce Frontend is Working 🚀
+        </h1>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
     </div>
   );
 }
