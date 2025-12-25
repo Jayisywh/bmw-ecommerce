@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema(
     preferences: {
       favoriteModels: [
         {
-          modelId: {
+          carId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Car",
           },
@@ -30,8 +30,8 @@ const userSchema = new mongoose.Schema(
         },
       ],
       preferredColors: { type: [String], default: [] },
-      savedConfiguration: { type: [String], default: [] },
     },
+    savedConfiguration: { type: [String], default: [] },
   },
   { timestamps: true }
 );

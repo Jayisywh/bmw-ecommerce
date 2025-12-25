@@ -31,3 +31,5 @@ const cartSchemea = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+export default mongoose.model("Cart", cartSchemea);
