@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Signup from "./pages/Signup";
 import Home from "./pages/Home";
+import Models from "./pages/Models";
 
 function App() {
   useEffect(() => {
@@ -20,6 +21,7 @@ function App() {
           <Route path="/" element={<Home />}></Route>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/models" element={<Models />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

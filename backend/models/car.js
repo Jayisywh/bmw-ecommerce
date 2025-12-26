@@ -5,13 +5,13 @@ const carSchema = new mongoose.Schema(
     name: { type: String, required: true },
     series: { type: String },
     price: { type: Number, required: true },
-    cartegoryId: {
+    categoryId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
       required: true,
     },
     engineType: { type: String },
-    hoursePower: { type: String },
+    horsePower: { type: String },
     colors: {
       type: [String],
     },
