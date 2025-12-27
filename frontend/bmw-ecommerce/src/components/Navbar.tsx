@@ -1,148 +1,118 @@
 import { Link } from "react-router-dom";
-import { useContext, useState } from "react";
-import { AuthContext } from "../contexts/AuthContext";
-import { FiHeart, FiShoppingCart } from "react-icons/fi";
+import { useState } from "react";
+import {
+  FiHeart,
+  FiMoon,
+  FiShoppingCart,
+  FiSun,
+  FiMenu,
+  FiX,
+} from "react-icons/fi";
+import { useAuth } from "../hooks/useAuth";
+import { useTheme } from "../hooks/useTheme";
+import { useWishlist } from "../hooks/useWishlist";
 
 const Navbar = () => {
-  const auth = useContext(AuthContext);
+  const auth = useAuth();
+  const { wishlist } = useWishlist();
+  const { theme, toggleTheme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
 
   if (!auth) return null;
   const { user, logout } = auth;
 
   return (
-    <header className="w-full border-b border-gray-200 bg-white">
+    <header className="sticky top-0 z-50 w-full border-b border-gray-200/20 bg-white/70 backdrop-blur-lg transition-all duration-300 dark:border-white/10 dark:bg-[#0a0a0a]/60">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        {/* LEFT */}
+        {/* LEFT - Logo & Desktop Links */}
         <div className="flex items-center gap-10">
           <Link
             to="/"
-            className="text-xl font-bold tracking-wide text-[#003366]"
+            className="text-2xl font-black tracking-tighter text-[#0066b1] dark:text-white"
           >
             BMW
           </Link>
-
-          {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden items-center gap-8 md:flex">
             <NavLink to="/models" label="Models" />
             <NavLink to="/configure" label="Configure" />
             <NavLink to="/compare" label="Compare" />
           </nav>
         </div>
 
-        {/* RIGHT - Desktop */}
-        <div className="hidden md:flex items-center gap-6">
-          {/* Wishlist */}
+        {/* RIGHT - Icons & Desktop Auth */}
+        <div className="flex items-center gap-1 md:gap-4">
+          <button
+            onClick={toggleTheme}
+            className="p-2 text-gray-800 dark:text-gray-100"
+          >
+            {theme === "light" ? <FiMoon size={20} /> : <FiSun size={20} />}
+          </button>
+
           <Link
             to="/wishlist"
-            className="relative text-gray-800 hover:text-[#003366]"
+            className="relative p-2 text-gray-800 dark:text-gray-100"
           >
             <FiHeart size={20} />
-            <span className="absolute -top-2 -right-2 rounded-full bg-[#003366] px-1.5 text-xs text-white">
-              2
-            </span>
+            {wishlist.length > 0 && (
+              <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#0066b1] text-[10px] text-white">
+                {wishlist.length}
+              </span>
+            )}
           </Link>
 
-          {/* Cart */}
           <Link
             to="/cart"
-            className="relative text-gray-800 hover:text-[#003366]"
+            className="relative p-2 text-gray-800 dark:text-gray-100"
           >
             <FiShoppingCart size={20} />
-            <span className="absolute -top-2 -right-2 rounded-full bg-[#003366] px-1.5 text-xs text-white">
+            <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#0066b1] text-[10px] text-white">
               3
             </span>
           </Link>
 
-          {/* Auth */}
-          {user ? (
-            <>
-              <span className="text-sm font-medium text-gray-800">
-                {user.name}
-              </span>
-              <button
-                onClick={logout}
-                className="text-sm font-medium text-[#003366] hover:underline"
-              >
-                Logout
-              </button>
-            </>
-          ) : (
-            <>
-              <Link
-                to="/login"
-                className="text-sm font-medium text-gray-800 hover:text-[#003366]"
-              >
-                Login
-              </Link>
-              <Link
-                to="/signup"
-                className="rounded-md bg-[#003366] px-4 py-2 text-sm font-medium text-white"
-              >
-                Sign Up
-              </Link>
-            </>
-          )}
-        </div>
+          {/* DESKTOP ONLY AUTH (Hidden on Mobile) */}
+          <div className="hidden items-center gap-4 border-l border-gray-300 pl-4 dark:border-white/20 md:flex">
+            {user ? (
+              <div className="flex items-center gap-4">
+                <span className="text-sm font-bold dark:text-white">
+                  {user.name}
+                </span>
+                <button
+                  onClick={logout}
+                  className="text-xs font-black uppercase text-red-500"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <>
+                <Link to="/login" className="text-sm font-bold dark:text-white">
+                  Login
+                </Link>
+                <Link
+                  to="/signup"
+                  className="rounded-full bg-[#0066b1] px-5 py-2 text-sm font-bold text-white transition-all hover:bg-[#004a82]"
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
+          </div>
 
-        {/* MOBILE ICONS + MENU */}
-        <div className="flex items-center gap-4 md:hidden">
-          {/* Wishlist */}
-          <Link
-            to="/wishlist"
-            className="relative text-gray-800 hover:text-[#003366]"
-          >
-            <FiHeart size={22} />
-            <span className="absolute -top-2 -right-2 rounded-full bg-[#003366] px-1.5 text-xs text-white">
-              2
-            </span>
-          </Link>
-
-          {/* Cart */}
-          <Link
-            to="/cart"
-            className="relative text-gray-800 hover:text-[#003366]"
-          >
-            <FiShoppingCart size={22} />
-            <span className="absolute -top-2 -right-2 rounded-full bg-[#003366] px-1.5 text-xs text-white">
-              3
-            </span>
-          </Link>
-
-          {/* Hamburger */}
+          {/* MOBILE HAMBURGER BUTTON */}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="text-gray-800 focus:outline-none"
+            className="ml-2 p-2 md:hidden dark:text-white"
           >
-            <svg
-              className="h-6 w-6"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-              viewBox="0 0 24 24"
-            >
-              {menuOpen ? (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              ) : (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              )}
-            </svg>
+            {menuOpen ? <FiX size={26} /> : <FiMenu size={26} />}
           </button>
         </div>
       </div>
 
-      {/* MOBILE MENU */}
+      {/* MOBILE MENU - Slide Down */}
       {menuOpen && (
-        <div className="md:hidden border-t border-gray-200 bg-white">
-          <nav className="flex flex-col gap-4 px-6 py-4">
+        <div className="absolute left-0 top-full w-full border-b border-white/10 bg-white/95 backdrop-blur-2xl transition-all dark:bg-[#0a0a0a]/95 md:hidden">
+          <nav className="flex flex-col gap-6 p-8">
             <MobileLink to="/models" label="Models" setMenuOpen={setMenuOpen} />
             <MobileLink
               to="/configure"
@@ -154,35 +124,37 @@ const Navbar = () => {
               label="Compare"
               setMenuOpen={setMenuOpen}
             />
-            <div className="mt-4 border-t pt-4">
+
+            {/* MOBILE AUTH (Only visible here on small screens) */}
+            <div className="mt-4 border-t border-gray-200 pt-8 dark:border-white/10">
               {user ? (
-                <>
-                  <p className="mb-2 text-sm font-medium text-gray-800">
+                <div className="flex flex-col gap-4">
+                  <span className="text-xs uppercase tracking-widest text-gray-500">
+                    Logged in as
+                  </span>
+                  <span className="text-xl font-bold dark:text-white">
                     {user.name}
-                  </p>
+                  </span>
                   <button
-                    onClick={() => {
-                      logout();
-                      setMenuOpen(false);
-                    }}
-                    className="text-sm font-medium text-[#003366]"
+                    onClick={logout}
+                    className="w-fit text-sm font-black uppercase text-red-500 underline underline-offset-8"
                   >
                     Logout
                   </button>
-                </>
+                </div>
               ) : (
-                <div className="flex flex-col gap-3">
+                <div className="grid grid-cols-2 gap-4">
                   <Link
                     to="/login"
                     onClick={() => setMenuOpen(false)}
-                    className="w-full rounded-md border border-gray-300 px-4 py-3 text-center text-sm font-medium text-gray-800"
+                    className="flex h-12 items-center justify-center rounded-xl border border-gray-300 font-bold dark:border-white/20 dark:text-white"
                   >
                     Login
                   </Link>
                   <Link
                     to="/signup"
                     onClick={() => setMenuOpen(false)}
-                    className="w-full rounded-md bg-[#003366] px-4 py-3 text-center text-sm font-medium text-white"
+                    className="flex h-12 items-center justify-center rounded-xl bg-[#0066b1] font-bold text-white shadow-lg shadow-blue-500/20"
                   >
                     Sign Up
                   </Link>
@@ -196,12 +168,10 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
-
 const NavLink = ({ to, label }: { to: string; label: string }) => (
   <Link
     to={to}
-    className="text-sm font-medium text-gray-900 hover:text-[#003366]"
+    className="text-sm font-bold uppercase tracking-widest text-gray-500 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
   >
     {label}
   </Link>
@@ -219,8 +189,10 @@ const MobileLink = ({
   <Link
     to={to}
     onClick={() => setMenuOpen(false)}
-    className="text-sm font-medium text-gray-900"
+    className="text-3xl font-black uppercase tracking-tighter dark:text-white"
   >
     {label}
   </Link>
 );
+
+export default Navbar;

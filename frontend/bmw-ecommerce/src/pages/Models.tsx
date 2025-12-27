@@ -15,7 +15,7 @@ export default function Models() {
         const res = await axios.get("http://127.0.0.1:8000/api/browse/cars");
         setCars(res.data.data);
       } catch (err) {
-        setError("Failed to load BMW models.");
+        setError(`Failed to load BMW models ${err}`);
       } finally {
         setLoading(false);
       }
@@ -25,7 +25,7 @@ export default function Models() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-black">
+    <div className="min-h-screen">
       <Navbar />
 
       <div className="max-w-7xl mx-auto px-6 py-10">

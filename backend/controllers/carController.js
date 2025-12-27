@@ -53,21 +53,22 @@ export const addCar = async (req, res) => {
       price,
       categoryId,
       engineType,
-      hoursePower,
+      horsePower,
       colors,
       images,
       isFeatured,
+      defaultColor,
     } = req.body;
     if (
       !name ||
       !series ||
       typeof price !== "number" ||
-      !categoryId ||
+      !mongoose.Types.ObjectId.isValid(categoryId) ||
       !engineType ||
-      !hoursePower ||
+      !horsePower ||
       !Array.isArray(colors) ||
-      !Array.isArray(images) ||
-      typeof isFeatured !== "boolean"
+      typeof images !== "object" ||
+      images === null
     ) {
       return res.status(400).json({
         status: "fail",
@@ -87,10 +88,11 @@ export const addCar = async (req, res) => {
       price,
       categoryId,
       engineType,
-      hoursePower,
+      horsePower,
       colors,
       images,
       isFeatured,
+      defaultColor,
     });
     await newCar.save();
     return res.status(201).json({

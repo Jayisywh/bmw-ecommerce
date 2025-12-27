@@ -1,9 +1,9 @@
-import { useState } from "react";
 import { Heart, ShoppingCart, Gauge, Zap, Palette, Info } from "lucide-react";
 import type { Car } from "../types/car";
+import { useWishlist } from "../hooks/useWishlist";
 
 export default function CarCard({ car }: { car: Car }) {
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  const { toggleWishlist, isWishlisted } = useWishlist();
 
   const displayImage =
     car.images && car.images.length > 0
@@ -35,18 +35,24 @@ export default function CarCard({ car }: { car: Car }) {
           </span>
         )}
         <button
-          onClick={() => setIsWishlisted(!isWishlisted)}
+          onClick={() => toggleWishlist(car._id)}
           className={`
-            absolute top-4 right-4 z-10 p-2.5 rounded-full
-            backdrop-blur-md border transition-all duration-300
-            ${
-              isWishlisted
-                ? "bg-red-500 text-white border-red-500"
-                : "bg-white/20 text-white border-white/30 hover:bg-white hover:text-red-500"
-            }
-          `}
+                    absolute top-4 right-4 z-20 p-2.5 rounded-full
+                    backdrop-blur-md border transition-all duration-300
+                    ${
+                      isWishlisted(car._id)
+                        ? "bg-red-500 border-red-500 shadow-lg shadow-red-500/50 scale-110"
+                        : "bg-black/20 text-white border-white/30 hover:bg-white hover:text-red-500 hover:scale-110"
+                    }
+        `}
         >
-          <Heart size={18} fill={isWishlisted ? "currentColor" : "none"} />
+          <Heart
+            size={18}
+            // Switch to white when the button background is red
+            color={isWishlisted(car._id) ? "white" : "currentColor"}
+            fill={isWishlisted(car._id) ? "white" : "none"}
+            className="transition-transform duration-300 active:scale-125"
+          />
         </button>
       </div>
       <div className="flex flex-col flex-1 p-6">

@@ -14,9 +14,16 @@ const carSchema = new mongoose.Schema(
     horsePower: { type: String },
     colors: {
       type: [String],
+      required: true,
     },
     images: {
-      type: [String],
+      type: Map,
+      of: [String],
+      required: true,
+    },
+    defaultColor: {
+      type: String,
+      required: true,
     },
     isFeatured: { type: Boolean, default: false },
   },
