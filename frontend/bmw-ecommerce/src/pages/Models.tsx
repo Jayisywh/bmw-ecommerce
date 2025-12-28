@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import Navbar from "../components/Navbar";
 import CarCard from "../components/CarCard";
 import axios from "axios";
 import type { Car } from "../types/car";
@@ -26,8 +25,6 @@ export default function Models() {
 
   return (
     <div className="min-h-screen">
-      <Navbar />
-
       <div className="max-w-7xl mx-auto px-6 py-10">
         {/* Page Title */}
         <h1 className="text-3xl font-black uppercase tracking-widest text-gray-900 dark:text-white mb-10">

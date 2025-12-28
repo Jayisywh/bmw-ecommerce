@@ -1,3 +1,7 @@
+interface CarImages {
+  [color: string]: string[];
+}
+
 export interface Car {
   _id: string;
   name: string;
@@ -7,11 +11,13 @@ export interface Car {
   engineType: string;
   horsePower: string;
   colors: string[];
-  images: string[];
+  images: CarImages;
+  defaultColor: string;
   isFeatured: boolean;
 }
 
 export interface Category {
+  _id: string;
   name: string;
   description: string;
   image: string;

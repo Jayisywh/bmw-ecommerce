@@ -1,5 +1,6 @@
 import axios from "axios";
 import { createContext, useState, type ReactNode } from "react";
+import { toast } from "react-toastify";
 interface IWishlistContext {
   wishlist: string[];
   totalWishlist: () => Promise<void>;
@@ -30,6 +31,10 @@ export const WishlistProvider = ({ children }: WishlistProvider) => {
   const toggleWishlist = async (carId: string) => {
     try {
       const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Please login or signup to use wishlist");
+        return;
+      }
       const res = await axios.post(
         `http://127.0.0.1:8000/api/wishlist/toggleWishlist`,
         { carId },
@@ -39,6 +44,11 @@ export const WishlistProvider = ({ children }: WishlistProvider) => {
       const data = res.data.data || res.data;
       const stringIds = data.map((item: any) => item.carId);
       setWishlist(stringIds);
+      if (stringIds.includes(carId)) {
+        toast.success("Added to wishlist ❤️");
+      } else {
+        toast.warn("Removed from wishlist");
+      }
     } catch (err) {
       console.log(err);
     }
