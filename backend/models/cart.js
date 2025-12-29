@@ -14,6 +14,10 @@ const cartSchemea = new mongoose.Schema(
           ref: "Car",
           required: true,
         },
+        image: {
+          type: String,
+          required: true,
+        },
         selectOptions: {
           color: { type: String },
           interior: { name: String, color: String, price: Number },

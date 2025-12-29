@@ -55,7 +55,6 @@ export const WishlistProvider = ({ children }: WishlistProvider) => {
   };
 
   const isWishlisted = (carId: string) => {
-    console.log("Checking wishlist:", wishlist, "for ID:", carId);
     return wishlist.includes(carId);
   };
   return (

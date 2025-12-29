@@ -2,20 +2,16 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import type { Car } from "../types/car";
+import { useCart } from "../hooks/useCart";
 
 export default function CarDetail() {
   const { id } = useParams();
-
+  const { addToCart } = useCart();
   const [car, setCar] = useState<Car | null>(null);
   const [loading, setLoading] = useState(true);
-
-  // UI states
   const [selectedColor, setSelectedColor] = useState<string>("");
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
-  /* =======================
-     FETCH CAR DETAIL
-  ======================== */
   useEffect(() => {
     const fetchCar = async () => {
       try {
@@ -43,9 +39,6 @@ export default function CarDetail() {
     }
   }, [car]);
 
-  /* =======================
-     DERIVED VALUES
-  ======================== */
   const imagesForColor =
     selectedColor && car?.images[selectedColor]
       ? car.images[selectedColor]
@@ -55,10 +48,6 @@ export default function CarDetail() {
     imagesForColor.length > 0
       ? imagesForColor[activeImageIndex]
       : "https://via.placeholder.com/1200x600?text=BMW+Coming+Soon";
-
-  /* =======================
-     LOADING STATE
-  ======================== */
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center text-gray-500 tracking-widest">
@@ -74,10 +63,6 @@ export default function CarDetail() {
       </div>
     );
   }
-
-  /* =======================
-     UI
-  ======================== */
   return (
     <div className="min-h-screen bg-white dark:bg-[#0b0f19]">
       <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-2 gap-14">
@@ -88,7 +73,7 @@ export default function CarDetail() {
             <img
               src={mainImage}
               alt={car.name}
-              className="w-full h-[460px] object-cover transition-all duration-500"
+              className="w-full h-115 object-cover transition-all duration-500"
             />
           </div>
 
@@ -171,7 +156,19 @@ export default function CarDetail() {
 
           {/* Actions */}
           <div className="mt-auto flex gap-4 pt-12">
-            <button className="flex-1 py-4 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white font-bold hover:bg-[#1C69D2] hover:text-white transition-all">
+            <button
+              className="flex-1 py-4 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white font-bold hover:bg-[#1C69D2] hover:text-white transition-all"
+              onClick={() =>
+                addToCart({
+                  carId: car._id,
+                  selectOptions: {
+                    color: car.defaultColor,
+                  },
+                  quantity: 1,
+                  totalPrice: car.price,
+                })
+              }
+            >
               Add to Cart
             </button>
 

@@ -1,9 +1,11 @@
-import Cart from "../models/cart";
+import Cart from "../models/cart.js";
 
 export const addToCartItem = async (req, res) => {
   try {
     const userId = req.userId;
-    const { carId, selectOptions, quantity, totalPrice } = req.body;
+    const { carId, selectOptions, quantity, totalPrice, image } = req.body;
+    console.log("REQ BODY:", req.body);
+    console.log("USER:", req.userId);
     let cart = await Cart.findOne({ userId });
     if (!cart) {
       cart = new Cart({
@@ -14,14 +16,15 @@ export const addToCartItem = async (req, res) => {
     const existingItem = cart.item.find(
       (item) =>
         item.carId.toString() === carId.toString() &&
-        JSON.stringify(item.selectionOptions) === JSON.stringify(selectOptions)
+        JSON.stringify(item.selectOptions) === JSON.stringify(selectOptions)
     );
     if (existingItem) {
       existingItem.quantity += quantity;
       existingItem.totalPrice += totalPrice * quantity;
     } else {
-      Cart.item.push({
+      cart.item.push({
         carId,
+        image,
         selectOptions: selectOptions,
         quantity,
         totalPrice,

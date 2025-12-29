@@ -2,10 +2,12 @@ import { Heart, ShoppingCart, Gauge, Zap, Palette, Info } from "lucide-react";
 import type { Car } from "../types/car";
 import { useWishlist } from "../hooks/useWishlist";
 import { useNavigate } from "react-router-dom";
+import { useCart } from "../hooks/useCart";
 
 export default function CarCard({ car }: { car: Car }) {
   const { toggleWishlist, isWishlisted } = useWishlist();
   const navigate = useNavigate();
+  const { addToCart } = useCart();
   const defaultColor = car.defaultColor || car.colors?.[0];
   const displayImage =
     defaultColor &&
@@ -13,6 +15,11 @@ export default function CarCard({ car }: { car: Car }) {
     car.images[defaultColor].length > 0
       ? car.images[defaultColor][0]
       : "https://via.placeholder.com/600x400?text=BMW+Coming+Soon";
+  const selectedColor = car.defaultColor || car.colors?.[0];
+
+  const selectedImage =
+    car.images?.[selectedColor]?.[0] ||
+    "https://via.placeholder.com/600x400?text=BMW+Coming+Soon";
 
   return (
     <div
@@ -118,7 +125,21 @@ export default function CarCard({ car }: { car: Car }) {
           </div>
 
           <div className="flex gap-2">
-            <button className="p-4 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-[#1C69D2] hover:text-white transition-all">
+            <button
+              className="p-4 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-[#1C69D2] hover:text-white transition-all"
+              onClick={(e) => {
+                e.stopPropagation();
+                addToCart({
+                  carId: car._id,
+                  image: selectedImage,
+                  selectOptions: {
+                    color: car.defaultColor,
+                  },
+                  quantity: 1,
+                  totalPrice: car.price,
+                });
+              }}
+            >
               <ShoppingCart size={20} />
             </button>
 

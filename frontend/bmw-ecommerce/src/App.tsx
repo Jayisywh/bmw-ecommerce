@@ -13,6 +13,7 @@ import Wishlist from "./pages/Wishlist";
 import { ToastContainer } from "react-toastify";
 import Cart from "./pages/Cart";
 import CarDetail from "./pages/CarDetail";
+import { CartProvider } from "./contexts/CartContext";
 
 function App() {
   useEffect(() => {
@@ -25,27 +26,29 @@ function App() {
     <AuthProvider>
       <ThemeProvider>
         <WishlistProvider>
-          <BrowserRouter>
-            <AppWrapper>
-              <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route path="/" element={<Home />}></Route>
-                <Route path="/models" element={<Models />} />
-                <Route path="/models/:id" element={<CarDetail />}></Route>
-                <Route path="/wishlist" element={<Wishlist />}></Route>
-                <Route path="/cart" element={<Cart />}></Route>
-              </Routes>
-            </AppWrapper>
-            <ToastContainer
-              position="top-right"
-              autoClose={2500}
-              hideProgressBar={false}
-              closeOnClick
-              pauseOnHover
-              theme="dark"
-            />
-          </BrowserRouter>
+          <CartProvider>
+            <BrowserRouter>
+              <AppWrapper>
+                <Routes>
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/signup" element={<Signup />} />
+                  <Route path="/" element={<Home />}></Route>
+                  <Route path="/models" element={<Models />} />
+                  <Route path="/models/:id" element={<CarDetail />}></Route>
+                  <Route path="/wishlist" element={<Wishlist />}></Route>
+                  <Route path="/cart" element={<Cart />}></Route>
+                </Routes>
+              </AppWrapper>
+              <ToastContainer
+                position="top-right"
+                autoClose={2500}
+                hideProgressBar={false}
+                closeOnClick
+                pauseOnHover
+                theme="dark"
+              />
+            </BrowserRouter>
+          </CartProvider>
         </WishlistProvider>
       </ThemeProvider>
     </AuthProvider>

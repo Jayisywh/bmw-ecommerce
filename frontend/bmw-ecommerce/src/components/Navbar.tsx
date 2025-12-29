@@ -11,15 +11,20 @@ import {
 import { useAuth } from "../hooks/useAuth";
 import { useTheme } from "../hooks/useTheme";
 import { useWishlist } from "../hooks/useWishlist";
+import { useCart } from "../hooks/useCart";
 
 const Navbar = () => {
   const auth = useAuth();
   const { wishlist } = useWishlist();
+  const { cart } = useCart();
   const { theme, toggleTheme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
 
   if (!auth) return null;
   const { user, logout } = auth;
+  const totalCartItem = Array.isArray(cart)
+    ? cart.reduce((sum, item) => sum + item.quantity, 0)
+    : 0;
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-gray-200/20 bg-white/70 backdrop-blur-lg transition-all duration-300 dark:border-white/10 dark:bg-[#0a0a0a]/60">
@@ -65,9 +70,11 @@ const Navbar = () => {
             className="relative p-2 text-gray-800 dark:text-gray-100"
           >
             <FiShoppingCart size={20} />
-            <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#0066b1] text-[10px] text-white">
-              3
-            </span>
+            {cart.length > 0 && (
+              <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#0066b1] text-[10px] text-white">
+                {totalCartItem}
+              </span>
+            )}
           </Link>
 
           {/* DESKTOP ONLY AUTH (Hidden on Mobile) */}
