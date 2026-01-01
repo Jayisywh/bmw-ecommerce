@@ -49,7 +49,7 @@ export default function CartItemCard({ item }: { item: any }) {
           {/* Price + Remove */}
           <div className="flex items-center gap-6">
             <span className="font-black text-lg">
-              ${item.totalPrice.toLocaleString()}
+              ${item.unitPrice * item.quantity}
             </span>
 
             <button

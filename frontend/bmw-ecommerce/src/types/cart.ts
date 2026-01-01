@@ -1,5 +1,4 @@
 export interface CartItem {
-  _id: string;
   carId: string;
   image: string;
   selectOptions?: {
@@ -15,13 +14,11 @@ export interface CartItem {
       price: number;
     };
     trim?: { name: string; price: number };
-    packages?: [
-      {
-        name: string;
-        price: number;
-      }
-    ];
+    packages?: {
+      name: string;
+      price: number;
+    }[];
   };
   quantity: number;
-  totalPrice: number;
+  unitPrice: number;
 }

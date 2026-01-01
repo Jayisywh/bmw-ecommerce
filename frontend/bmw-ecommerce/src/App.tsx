@@ -14,6 +14,7 @@ import { ToastContainer } from "react-toastify";
 import Cart from "./pages/Cart";
 import CarDetail from "./pages/CarDetail";
 import { CartProvider } from "./contexts/CartContext";
+import Compare from "./pages/Compare";
 
 function App() {
   useEffect(() => {
@@ -35,6 +36,7 @@ function App() {
                   <Route path="/" element={<Home />}></Route>
                   <Route path="/models" element={<Models />} />
                   <Route path="/models/:id" element={<CarDetail />}></Route>
+                  <Route path="/compare" element={<Compare />}></Route>
                   <Route path="/wishlist" element={<Wishlist />}></Route>
                   <Route path="/cart" element={<Cart />}></Route>
                 </Routes>

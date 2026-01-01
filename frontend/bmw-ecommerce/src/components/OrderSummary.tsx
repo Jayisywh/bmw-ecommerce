@@ -1,7 +1,10 @@
 import SummaryRow from "./SummaryRow";
 
 export default function OrderSummary({ cart }: { cart: any[] }) {
-  const subtotal = cart.reduce((sum, item) => sum + item.totalPrice, 0);
+  const subtotal = cart.reduce(
+    (sum, item) => sum + item.unitPrice * item.quantity,
+    0
+  );
   const tax = subtotal * 0.05;
   const total = subtotal + tax;
 

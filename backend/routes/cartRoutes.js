@@ -9,8 +9,8 @@ import verifyToken from "../middlewares/verifyToken.js";
 
 const router = express.Router();
 router.post("/addCart", verifyToken, addToCartItem);
-router.post("/updateCart", updateCartItem);
-router.delete("/deleteCart", deleteCartItem);
-router.get("/getCard", verifyToken, getCartItem);
+router.post("/updateCart", verifyToken, updateCartItem);
+router.delete("/deleteCart", verifyToken, deleteCartItem);
+router.get("/getCart", verifyToken, getCartItem);
 
 export default router;

@@ -3,9 +3,7 @@ import Cart from "../models/cart.js";
 export const addToCartItem = async (req, res) => {
   try {
     const userId = req.userId;
-    const { carId, selectOptions, quantity, totalPrice, image } = req.body;
-    console.log("REQ BODY:", req.body);
-    console.log("USER:", req.userId);
+    const { carId, selectOptions, quantity, unitPrice, image } = req.body;
     let cart = await Cart.findOne({ userId });
     if (!cart) {
       cart = new Cart({
@@ -13,21 +11,24 @@ export const addToCartItem = async (req, res) => {
         item: [],
       });
     }
-    const existingItem = cart.item.find(
-      (item) =>
-        item.carId.toString() === carId.toString() &&
-        JSON.stringify(item.selectOptions) === JSON.stringify(selectOptions)
-    );
+    const existingItem = cart.item.find((item) => {
+      const isSameCar = item.carId.toString() === carId.toString();
+      const isSameColor = item.selectOptions.color === selectOptions.color;
+      const isSamePackages =
+        JSON.stringify(item.selectOptions.packages) ===
+        JSON.stringify(selectOptions.packages);
+
+      return isSameCar && isSameColor && isSamePackages;
+    });
     if (existingItem) {
       existingItem.quantity += quantity;
-      existingItem.totalPrice += totalPrice * quantity;
     } else {
       cart.item.push({
         carId,
         image,
         selectOptions: selectOptions,
         quantity,
-        totalPrice,
+        unitPrice,
       });
     }
     await cart.save();
@@ -69,7 +70,7 @@ export const updateCartItem = async (req, res) => {
       });
     }
     if (quantity < 1) {
-      return res.staus(400).json({
+      return res.stauts(400).json({
         message: "quantity must be at least 1",
       });
     }
@@ -101,7 +102,7 @@ export const deleteCartItem = async (req, res) => {
         message: "item is not found",
       });
     }
-    item.remove();
+    cart.item.pull({ _id: itemId });
     await cart.save();
     return res.status(200).json(cart);
   } catch (err) {

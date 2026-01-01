@@ -6,6 +6,7 @@ export interface IUser {
 
 export interface IAuthContext {
   user: IUser | null;
+  authLoading: boolean;
   login: (user: IUser, token: string) => void;
   logout: () => void;
 }
