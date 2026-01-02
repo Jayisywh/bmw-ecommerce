@@ -164,7 +164,7 @@ export default function CarCard({ car }: CarCardProps) {
           </button>
 
           <button
-            onClick={() => navigate(`/models/${car._id}`)}
+            onClick={() => navigate(`/configure/${car._id}`)}
             className="
               px-6 py-4 rounded-xl
               bg-[#1C69D2] hover:bg-[#1652a7]

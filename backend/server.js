@@ -6,6 +6,7 @@ import carRoute from "./routes/carRoutes.js";
 import wishlistRoute from "./routes/wishlistRoutes.js";
 import cartRoute from "./routes/cartRoutes.js";
 import dbConnect from "./config/db.js";
+import caroptionsRoute from "./routes/caroptionsRoutes.js";
 
 dotenv.config();
 dbConnect();
@@ -17,6 +18,7 @@ app.use("/api/browse", carRoute);
 app.use("/api/admin", carRoute);
 app.use("/api/wishlist", wishlistRoute);
 app.use("/api/cart", cartRoute);
+app.use("/api/carOptions", caroptionsRoute);
 app.get("/", (req, res) => {
   res.send("BMW Ecommerce'backend is running");
 });

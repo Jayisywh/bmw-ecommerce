@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import type { Car } from "../types/car";
 
 interface CompareCarCardProps {
@@ -7,18 +7,12 @@ interface CompareCarCardProps {
 }
 
 export default function CompareCarCard({ car, onRemove }: CompareCarCardProps) {
-  const [selectedColor, setSelectedColor] = useState<string>("");
-
-  useEffect(() => {
-    if (car) {
-      setSelectedColor(car.defaultColor);
-    }
-  }, [car]);
-
-  // Matches the dashed box look from your screenshot but with theme-aware colors
+  const [selectedColor, setSelectedColor] = useState<string>(
+    car?.defaultColor || ""
+  );
   if (!car) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[600px] border-2 border-dashed border-gray-200 dark:border-zinc-800 rounded-sm bg-transparent">
+      <div className="flex flex-col items-center justify-center min-h-150 border-2 border-dashed border-gray-200 dark:border-zinc-800 rounded-sm bg-transparent">
         <div className="w-10 h-10 border border-gray-300 dark:border-zinc-700 rounded-full flex items-center justify-center mb-4">
           <span className="text-gray-400 dark:text-zinc-600">+</span>
         </div>
@@ -29,11 +23,14 @@ export default function CompareCarCard({ car, onRemove }: CompareCarCardProps) {
     );
   }
 
-  const colorImages = (car.images as any)[selectedColor] || [];
+  const colorImages =
+    (car.images as any)[selectedColor] ||
+    (car.images as any)[car.defaultColor] ||
+    [];
   const mainImage = colorImages.length > 0 ? colorImages[0] : "";
 
   return (
-    <div className="relative bg-white dark:bg-transparent border border-gray-100 dark:border-zinc-800 rounded-sm overflow-hidden flex flex-col min-h-[600px]">
+    <div className="relative bg-white dark:bg-transparent border border-gray-100 dark:border-zinc-800 rounded-sm overflow-hidden flex flex-col min-h-150">
       {/* 1. Subtle Remove Link */}
       <button
         onClick={onRemove}
@@ -43,7 +40,7 @@ export default function CompareCarCard({ car, onRemove }: CompareCarCardProps) {
       </button>
 
       {/* 2. Image Area (Slightly lighter dark to make the car pop) */}
-      <div className="aspect-[16/10] bg-gray-50 dark:bg-zinc-900/30 flex items-center justify-center border-b border-gray-100 dark:border-zinc-800">
+      <div className="aspect-16/10 bg-gray-50 dark:bg-zinc-900/30 flex items-center justify-center border-b border-gray-100 dark:border-zinc-800">
         <img
           src={mainImage}
           alt={car.name}
@@ -51,7 +48,7 @@ export default function CompareCarCard({ car, onRemove }: CompareCarCardProps) {
         />
       </div>
 
-      <div className="p-8 flex-grow flex flex-col">
+      <div className="p-8 grow flex flex-col">
         {/* 3. Typography: BMW High-Contrast Style */}
         <div className="mb-10">
           <p className="text-[10px] font-bold text-blue-600 dark:text-blue-500 uppercase tracking-[0.3em] mb-2">
@@ -70,7 +67,7 @@ export default function CompareCarCard({ car, onRemove }: CompareCarCardProps) {
           <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-600 mb-4">
             Exterior:{" "}
             <span className="text-gray-900 dark:text-zinc-200">
-              {selectedColor}
+              {selectedColor || car?.defaultColor}
             </span>
           </p>
           <div className="flex flex-wrap gap-4">

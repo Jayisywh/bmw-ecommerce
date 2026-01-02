@@ -59,7 +59,11 @@ export default function Compare() {
           </div>
 
           {/* Just use the component. It handles its own "No car" state! */}
-          <CompareCarCard car={leftCar} onRemove={() => setLeftCar(null)} />
+          <CompareCarCard
+            key={leftCar?._id || "left empty"}
+            car={leftCar}
+            onRemove={() => setLeftCar(null)}
+          />
         </div>
 
         {/* RIGHT COLUMN */}
@@ -92,7 +96,11 @@ export default function Compare() {
           </div>
 
           {/* Same here. No need for the dashed div wrapper! */}
-          <CompareCarCard car={rightCar} onRemove={() => setRightCar(null)} />
+          <CompareCarCard
+            key={rightCar?._id || "right empty"}
+            car={rightCar}
+            onRemove={() => setRightCar(null)}
+          />
         </div>
       </div>
     </div>
