@@ -7,7 +7,7 @@ export interface Car {
   name: string;
   series: string;
   price: number;
-  categroyId: string | Category;
+  categoryId: string | Category;
   engineType: string;
   horsePower: string;
   colors: string[];

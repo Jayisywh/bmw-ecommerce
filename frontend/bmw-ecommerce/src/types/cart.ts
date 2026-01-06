@@ -2,7 +2,10 @@ export interface CartItem {
   carId: string;
   image: string;
   selectOptions?: {
-    color: string;
+    // color can be a simple string or an object depending on where the item was added
+    color?:
+      | string
+      | { name?: string; color?: string; price?: number; hex?: string };
     interior?: {
       name: string;
       color: string;

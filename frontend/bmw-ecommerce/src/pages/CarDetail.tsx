@@ -48,6 +48,7 @@ export default function CarDetail() {
     imagesForColor.length > 0
       ? imagesForColor[activeImageIndex]
       : "https://via.placeholder.com/1200x600?text=BMW+Coming+Soon";
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center text-gray-500 tracking-widest">
@@ -162,10 +163,11 @@ export default function CarDetail() {
                 addToCart({
                   carId: car._id,
                   selectOptions: {
-                    color: car.defaultColor,
+                    color: selectedColor,
                   },
+                  image: car.images[selectedColor][0],
                   quantity: 1,
-                  totalPrice: car.price,
+                  unitPrice: car.price,
                 })
               }
             >

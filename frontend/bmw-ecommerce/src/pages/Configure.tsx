@@ -5,20 +5,24 @@ import type { CarOptions, Config } from "../types/config";
 import axios from "axios";
 import PreviewSection from "../components/PreviewSection";
 import ConfigSection from "../components/ConfigSection";
+import { useCart } from "../hooks/useCart";
 
 export default function Configure() {
   const { id } = useParams();
+  const { addToCart } = useCart();
+
   const [car, setCar] = useState<Car | null>(null);
   const [options, setOptions] = useState<CarOptions | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
-  const [config, setConfig] = useState<Config>({
-    color: "",
-    interior: "",
-    size: "",
-    trims: "",
-    packages: [],
-  });
+  // ✅ CONFIG SHAPE MATCHES BACKEND
+  const [config, setConfig] = useState<Config>({ packages: [] });
+  const normalizeColor = (c: { color: string; price: number }) => {
+    return {
+      name: c.color,
+      price: c.price,
+    };
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,14 +37,13 @@ export default function Configure() {
 
         setCar(carData);
         setOptions(optData);
-
-        // SAFE INITIALIZATION: Added optional chaining (?.) and fallbacks (|| "")
-        // to prevent "Cannot read properties of undefined (reading '0')"
         setConfig({
-          color: carData?.defaultColor || optData?.colors?.[0]?.color || "",
-          interior: optData?.interior?.[0]?.name || "",
-          size: optData?.size?.[0]?.size || "",
-          trims: optData?.trims?.[0]?.name || "",
+          color: optData.colors?.[0]
+            ? normalizeColor(optData.colors[0])
+            : undefined,
+          interior: optData.interior?.[0],
+          wheels: optData.size?.[0],
+          trim: optData.trims?.[0],
           packages: [],
         });
       } catch (err) {
@@ -49,69 +52,96 @@ export default function Configure() {
         setLoading(false);
       }
     };
+
     if (id) fetchData();
   }, [id]);
 
+  // ✅ PRICE = SIMPLE & SAFE
   const totalPrice = useMemo(() => {
-    if (!car || !options) return 0;
-    const total = car.price || 0;
+    if (!car) return 0;
 
-    // Added safe navigation (?.) for all arrays
-    const colorPrice =
-      options.colors?.find((c) => c.color === config.color)?.price || 0;
-    const intPrice =
-      options.interior?.find((i) => i.name === config.interior)?.price || 0;
-    const trimPrice =
-      options.trims?.find((t) => t.name === config.trims)?.price || 0;
-    const wheelPrice =
-      options.size?.find((s) => s.size === config.size)?.price || 0;
-
-    // Ensure options.package exists before filtering
-    const pkgPrice = (options.package || [])
-      .filter((p) => config.packages.includes(p.name))
-      .reduce((acc, curr) => acc + curr.price, 0);
-
-    return total + colorPrice + intPrice + trimPrice + wheelPrice + pkgPrice;
-  }, [car, options, config]);
-
-  if (loading || !car || !options) {
     return (
-      <div className="h-screen flex items-center justify-center bg-white dark:bg-[#0b0f1a]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#1C69D2]"></div>
+      car.price +
+      (config.color?.price ?? 0) +
+      (config.interior?.price ?? 0) +
+      (config.wheels?.price ?? 0) +
+      (config.trim?.price ?? 0) +
+      (config.packages?.reduce((sum, p) => sum + p.price, 0) ?? 0)
+    );
+  }, [car, config]);
+
+  if (loading) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <div className="animate-spin h-12 w-12 border-t-2 border-b-2 border-[#1C69D2] rounded-full" />
       </div>
     );
   }
+  if (!car) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-[#0b0f1a]">
+        <div className="max-w-md text-center bg-white dark:bg-[#111827] p-8 rounded-2xl shadow-xl">
+          <h2 className="text-2xl font-black mb-3">No car selected</h2>
 
-  return (
-    <div className="min-h-screen bg-gray-50 dark:bg-[#0b0f1a] transition-colors duration-500">
-      <header className="sticky top-0 z-50 bg-white/80 dark:bg-[#0b0f1a]/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <h1 className="text-xl font-black uppercase tracking-tighter text-gray-900 dark:text-white">
-            {car.name} <span className="text-[#1C69D2]">Configurator</span>
-          </h1>
-          <div className="text-right">
-            <p className="text-[10px] uppercase text-gray-400 font-bold tracking-widest">
-              Total MSRP
-            </p>
-            <p className="text-2xl font-black text-[#1C69D2]">
-              ${totalPrice.toLocaleString()}
-            </p>
-          </div>
+          <p className="text-gray-500 mb-6">
+            Please choose a model first before configuring your vehicle.
+          </p>
+
+          <a
+            href="/models"
+            className="inline-block px-6 py-3 bg-[#1C69D2] hover:bg-[#1652a7] text-white font-bold rounded-xl"
+          >
+            Browse Models
+          </a>
         </div>
-      </header>
+      </div>
+    );
+  }
+  const selectedColorName = config.color?.name || car.defaultColor;
+  const cartImage =
+    (selectedColorName && car.images?.[selectedColorName]?.[0]) ||
+    Object.values(car.images || {})?.[0]?.[0] ||
+    "https://via.placeholder.com/600x400?text=BMW+Image";
+  if (!options) return null;
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-[#0b0f1a]">
+      <main className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-12">
+        {/* Preview */}
+        <div className="lg:col-span-7 sticky top-24">
+          <PreviewSection car={car} config={config} />
+        </div>
 
-      <main className="max-w-7xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-          <div className="lg:col-span-7 h-fit lg:sticky lg:top-32">
-            <PreviewSection car={car} config={config} />
-          </div>
-          <div className="lg:col-span-5">
-            <ConfigSection
-              options={options}
-              config={config}
-              setConfig={setConfig}
-            />
-            <button className="w-full mt-8 py-5 bg-[#1C69D2] hover:bg-[#1652a7] text-white font-black uppercase tracking-widest rounded-xl transition-all shadow-xl shadow-blue-500/20 active:scale-[0.98]">
+        {/* Config */}
+        <div className="lg:col-span-5 flex flex-col gap-6">
+          <ConfigSection
+            options={options}
+            config={config}
+            setConfig={setConfig}
+          />
+
+          {/* Add to cart */}
+          <div className="bg-white dark:bg-[#111827] p-6 rounded-2xl shadow-lg">
+            <div className="flex justify-between mb-4">
+              <span className="text-sm font-bold text-gray-500">
+                Total MSRP
+              </span>
+              <span className="text-2xl font-black text-[#1C69D2]">
+                ${totalPrice.toLocaleString()}
+              </span>
+            </div>
+
+            <button
+              className="w-full py-4 bg-[#1C69D2] hover:bg-[#1652a7] text-white font-black rounded-xl"
+              onClick={() =>
+                addToCart({
+                  carId: car._id,
+                  image: cartImage,
+                  selectOptions: config, // 🔥 EXACT MATCH
+                  quantity: 1,
+                  unitPrice: totalPrice,
+                })
+              }
+            >
               Finalize Order
             </button>
           </div>

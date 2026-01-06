@@ -144,7 +144,9 @@ export default function CarCard({ car }: CarCardProps) {
               addToCart({
                 carId: car._id,
                 image: displayImage,
-                selectOptions: { color: defaultColor },
+                selectOptions: {
+                  color: defaultColor,
+                },
                 quantity: 1,
                 unitPrice: car.price,
               });

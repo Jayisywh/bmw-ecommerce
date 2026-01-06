@@ -18,13 +18,16 @@ const cartSchemea = new mongoose.Schema(
           type: String,
           required: true,
         },
-        selectOptions: {
-          color: { type: String },
-          interior: { name: String, color: String, price: Number },
-          wheels: { size: String, type: String, price: Number },
-          trim: { name: String, price: Number },
-          packages: [{ name: String, price: Number }],
-        },
+        selectOptions: new mongoose.Schema(
+          {
+            color: { name: String, hex: String, price: Number },
+            wheels: { type: mongoose.Schema.Types.Mixed },
+            interior: { name: String, color: String, price: Number },
+            trim: { name: String, price: Number },
+            packages: [{ name: String, price: Number }],
+          },
+          { _id: false }
+        ),
         quantity: {
           type: Number,
           default: 1,
