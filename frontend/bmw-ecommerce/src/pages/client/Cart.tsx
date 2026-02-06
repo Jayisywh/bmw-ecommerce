@@ -1,0 +1,29 @@
+import CartItemCard from "../../components/client/CartItemCard";
+import OrderSummary from "../../components/client/OrderSummary";
+import { useCart } from "../../hooks/useCart";
+
+export default function Cart() {
+  const { cart, loading } = useCart();
+
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-[#0b0f19] px-6 py-12">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-10">
+        <div className="lg:col-span-2 space-y-6">
+          <h1 className="text-3xl font-black uppercase mb-6">Shopping Cart</h1>
+
+          {loading ? (
+            <div className="text-gray-400 text-lg">Loading your cart...</div>
+          ) : cart.length === 0 ? (
+            <div className="text-gray-400 text-lg">Your cart is empty</div>
+          ) : (
+            cart.map((item) => <CartItemCard item={item} />)
+          )}
+        </div>
+
+        <div className="lg:col-span-1 mt-14">
+          <OrderSummary cart={cart} />
+        </div>
+      </div>
+    </div>
+  );
+}

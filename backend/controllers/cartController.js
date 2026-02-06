@@ -1,49 +1,11 @@
 import Cart from "../models/cart.js";
 
-export const normalizeSelectOptions = (options = {}) => ({
-  color: (function (c) {
-    if (!c) return null;
-    // Accept string color, or object { name } or { color }
-    if (typeof c === "string") return { name: c };
-    if (typeof c === "object") {
-      if (c.name) return c;
-      if (c.color) return { name: c.color, price: c.price, hex: c.hex };
-    }
-    return null;
-  })(options.color),
-
-  interior:
-    options.interior && typeof options.interior === "object"
-      ? options.interior
-      : null,
-
-  wheels: (function (w) {
-    if (!w) return null;
-    if (typeof w === "string") return { size: w };
-    if (typeof w === "object") return w;
-    return null;
-  })(options.wheels),
-
-  trim: options.trim && typeof options.trim === "object" ? options.trim : null,
-
-  packages: Array.isArray(options.packages) ? options.packages : [],
-});
-
 export const addToCartItem = async (req, res) => {
   try {
     const userId = req.userId;
-    const { carId, selectOptions, quantity, unitPrice, image } = req.body;
-    // Debug incoming payload to help diagnose client shape issues
-    console.log("[addToCartItem] incoming:", {
-      carId,
-      selectOptions,
-      quantity,
-      unitPrice,
-      hasImage: !!image,
-      imagePreview:
-        typeof image === "string" ? image.slice(0, 120) : typeof image,
-    });
-    const safeSelectOptions = normalizeSelectOptions(selectOptions);
+    const { carId, selectOptions, quantity, totalPrice, image } = req.body;
+    console.log("REQ BODY:", req.body);
+    console.log("USER:", req.userId);
     let cart = await Cart.findOne({ userId });
     if (!cart) {
       cart = new Cart({
@@ -53,31 +15,27 @@ export const addToCartItem = async (req, res) => {
     }
     const existingItem = cart.item.find((item) => {
       const isSameCar = item.carId.toString() === carId.toString();
-
-      const leftColor = item.selectOptions?.color;
-      const rightColor = safeSelectOptions?.color;
-      const leftName = leftColor ? leftColor.name || leftColor.color : null;
-      const rightName = rightColor ? rightColor.name || rightColor.color : null;
-
-      const isSameColor = leftName && rightName && leftName === rightName;
+      const isSameColor = item.selectOptions.color === selectOptions.color;
       const isSamePackages =
-        JSON.stringify(item.selectOptions?.packages || []) ===
-        JSON.stringify(safeSelectOptions.packages || []);
+        JSON.stringify(item.selectOptions.packages) ===
+        JSON.stringify(selectOptions.packages);
 
       return isSameCar && isSameColor && isSamePackages;
     });
     if (existingItem) {
       existingItem.quantity += quantity;
+      existingItem.totalPrice += totalPrice * quantity;
     } else {
       cart.item.push({
         carId,
         image,
-        selectOptions: safeSelectOptions,
+        selectOptions: selectOptions,
         quantity,
-        unitPrice,
+        totalPrice,
       });
     }
     await cart.save();
+    await cart.populate("item.carId", "images name series price");
     return res.status(200).json({ item: cart.item });
   } catch (err) {
     return res.status(500).json({
@@ -116,7 +74,7 @@ export const updateCartItem = async (req, res) => {
       });
     }
     if (quantity < 1) {
-      return res.stauts(400).json({
+      return res.staus(400).json({
         message: "quantity must be at least 1",
       });
     }
@@ -124,7 +82,8 @@ export const updateCartItem = async (req, res) => {
     if (!item) return res.status(404).json({ message: "item is not found" });
     item.quantity = quantity;
     await cart.save();
-    return res.status(200).json(cart);
+    await cart.populate("item.carId", "images name series price");
+    return res.status(200).json({ item: cart.item });
   } catch (err) {
     return res.status(500).json({
       message: err.message,
@@ -148,9 +107,10 @@ export const deleteCartItem = async (req, res) => {
         message: "item is not found",
       });
     }
-    cart.item.pull({ _id: itemId });
+    item.remove();
     await cart.save();
-    return res.status(200).json(cart);
+    await cart.populate("item.carId", "images name series price");
+    return res.status(200).json({ item: cart.item });
   } catch (err) {
     return res.status(500).json({
       message: err.message,

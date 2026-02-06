@@ -18,8 +18,11 @@ const paymentSchema = new mongoose.Schema(
     },
     paymentMethod: {
       type: String,
-      enum: ["Card", "PayPal", "Stripe"],
+      enum: ["Card", "PayPal", "COD"],
       required: true,
+    },
+    paymentProvider: {
+      type: String,
     },
     status: {
       type: String,
@@ -28,7 +31,7 @@ const paymentSchema = new mongoose.Schema(
     },
     transactionId: {
       type: String,
-      required: true,
+      default: null,
     },
   },
   { timestamps: true }

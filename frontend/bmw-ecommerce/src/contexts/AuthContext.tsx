@@ -1,5 +1,13 @@
-import { createContext, useEffect, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useEffect,
+  useState,
+  useCallback,
+  type ReactNode,
+} from "react";
 import type { IAuthContext, IUser } from "../types/auth.d";
+import { getMe } from "../services/authApi";
+import { useNavigate } from "react-router-dom";
 /* eslint-disable react-refresh/only-export-components */
 export const AuthContext = createContext<IAuthContext | null>(null);
 
@@ -9,10 +17,10 @@ interface AuthProviderProps {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<IUser | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     let isMounted = true;
-    const controller = new AbortController();
 
     const checkAuth = async () => {
       const token = localStorage.getItem("token");
@@ -23,31 +31,20 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
 
       try {
-        const res = await fetch("http://127.0.0.1:8000/api/auth/me", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          signal: controller.signal,
-        });
-
-        if (res.status === 401) {
-          localStorage.removeItem("token");
-          if (isMounted) setUser(null);
-          return;
-        }
-
-        if (!res.ok) {
-          console.error("Auth check failed:", res.status, await res.text());
-          return;
-        }
-        const userData = await res.json();
-        if (isMounted) setUser(userData);
-      } catch (err: unknown) {
-        if (err instanceof DOMException && err.name === "AbortError") {
-          // fetch was aborted; ignore
-        } else {
-          console.error("Auth check network error:", err);
-        }
+        const userRes = await getMe(token);
+        // backend may return a Mongoose document with `_id` — normalize to `id`
+        const normalized = userRes
+          ? {
+              id: userRes._id || userRes.id,
+              name: userRes.name,
+              email: userRes.email,
+              role: userRes.role || "user",
+            }
+          : null;
+        if (isMounted) setUser(normalized);
+      } catch {
+        localStorage.removeItem("token");
+        if (isMounted) setUser(null);
       } finally {
         if (isMounted) setAuthLoading(false);
       }
@@ -57,19 +54,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     return () => {
       isMounted = false;
-      controller.abort();
     };
   }, []);
 
-  const login = (userData: IUser, token: string) => {
+  const login = useCallback((userData: IUser, token: string) => {
     setUser(userData);
     localStorage.setItem("token", token);
-  };
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     setUser(null);
     localStorage.removeItem("token");
-  };
+    navigate("/");
+  }, [navigate]);
 
   return (
     <AuthContext.Provider value={{ user, authLoading, login, logout }}>

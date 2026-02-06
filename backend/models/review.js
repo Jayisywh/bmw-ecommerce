@@ -7,11 +7,6 @@ const reviewSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    carId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Car",
-      required: true,
-    },
     rating: {
       type: Number,
       min: 1,
@@ -23,7 +18,7 @@ const reviewSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export default mongoose.model("Review", reviewSchema);

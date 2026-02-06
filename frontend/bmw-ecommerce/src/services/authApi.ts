@@ -4,7 +4,7 @@ import type { IAuthResponse } from "../types/auth.d";
 const API_URL = "http://127.0.0.1:8000/api/auth";
 
 export const signupUser = async (
-  data: SignupPayload
+  data: SignupPayload,
 ): Promise<IAuthResponse> => {
   const res = await axios.post(`${API_URL}/signup`, data);
   return res.data;
@@ -12,5 +12,12 @@ export const signupUser = async (
 
 export const loginUser = async (data: LoginPayload): Promise<IAuthResponse> => {
   const res = await axios.post(`${API_URL}/login`, data);
+  return res.data;
+};
+
+export const getMe = async (token: string) => {
+  const res = await axios.get(`${API_URL}/me`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
   return res.data;
 };

@@ -27,7 +27,10 @@ const carSchema = new mongoose.Schema(
     },
     isFeatured: { type: Boolean, default: false },
   },
-  { timestamps: true }
+  { 
+    timestamps: true,
+    strict: false // Allow fields not defined in schema (like interior, size, trims, package)
+  },
 );
 
 export default mongoose.model("Car", carSchema);

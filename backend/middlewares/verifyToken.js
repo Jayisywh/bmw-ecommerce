@@ -11,7 +11,15 @@ const verifyToken = (req, res, next) => {
   const token = authHeader.split(" ")[1];
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.userId = decoded.id;
+    // debug: log decoded token for troubleshooting
+    // eslint-disable-next-line no-console
+    console.log("[verifyToken] decoded token:", decoded);
+    // token payloads may use `userId` (authController) or `id` in other places
+    req.userId = decoded.userId || decoded.id;
+    // also expose role if present
+    req.userRole = decoded.role || null;
+    // eslint-disable-next-line no-console
+    console.log("[verifyToken] req.userId set to:", req.userId);
     next();
   } catch {
     return res.status(401).json({

@@ -1,2 +1,21 @@
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
+
+body {
+  background-image: none !important;
+  background-color: #ffffff; /* Default light */
+}
+
+/* 2. Ensure dark mode background is solid */
+.dark body {
+  background-color: #121c2a; /* Matches your AppWrapper dark color */
+  background-image: none !important;
+}
+
+/* 3. Reset the root container to full width */
+#root {
+  width: 100%;
+  max-width: 100%;
+  padding: 0;
+  margin: 0;
+}

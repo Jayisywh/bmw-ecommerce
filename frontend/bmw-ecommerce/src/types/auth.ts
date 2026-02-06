@@ -8,3 +8,11 @@ export interface LoginPayload {
   email: string;
   password: string;
 }
+
+export interface UserInfo {
+  name: string;
+  email: string;
+  favoriteCount: number;
+  cartItemCount: number;
+  orderItemCount: number;
+}
